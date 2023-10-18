@@ -1,0 +1,10 @@
+version: '3'
+services:
+  base-project-pg:
+    image: postgres:13.3
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=baynazarow2971
+      - POSTGRES_DB=WalletService
+    ports:
+      - '5432:5432'
