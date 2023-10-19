@@ -23,6 +23,11 @@ public class WalletServiceImpl implements WalletService {
 
     @Override
     public boolean authenticatePlayer(String username, String password) {
+        if (playerRepository.isPlayerExists(username, password)) {
+            System.out.println("Пользователь с именем " + username + " уже существует.");
+            return false;
+        }
+
         boolean isAuthenticated = playerRepository.authenticatePlayer(username, password);
         if (isAuthenticated) {
             auditService.logAuthentication(username);

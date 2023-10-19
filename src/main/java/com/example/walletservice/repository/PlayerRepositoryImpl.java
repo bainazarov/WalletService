@@ -10,16 +10,15 @@ import java.util.Map;
 import java.util.Set;
 
 public class PlayerRepositoryImpl implements PlayerRepository {
+    private static final PlayerRepositoryImpl playerRepository = new PlayerRepositoryImpl();
 
-    private ConnectionManager connection;
+    public static PlayerRepositoryImpl getInstance()  {
+        return playerRepository;
+    }
 
     public PlayerRepositoryImpl() {
     }
 
-    public PlayerRepositoryImpl(ConnectionManager connection) {
-
-        this.connection = connection;
-    }
 
     @Override
     public void registerPlayer(String username, String password) {
@@ -131,5 +130,39 @@ public class PlayerRepositoryImpl implements PlayerRepository {
         } catch (SQLException e) {
             throw new RuntimeException("Ошибка при обновлении игрока: " + e.getMessage());
         }
+    }
+
+    @Override
+    public void deleteAll() {
+        try (Connection connection = ConnectionManager.getConnection();
+             Statement statement = connection.createStatement()) {
+            statement.executeUpdate("DELETE FROM wallet.players");
+            statement.executeUpdate("DELETE FROM wallet.audit_logs");
+            statement.executeUpdate("DELETE FROM wallet.transaction_ids");
+        } catch (SQLException e) {
+            throw new RuntimeException("Ошибка при выполнении SQL-запроса DELETE: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public boolean isPlayerExists(String username, String password) {
+        String userIdSql = "SELECT COUNT(*) FROM wallet.players WHERE username = ?";
+        try (Connection connection = ConnectionManager.getConnection();
+             PreparedStatement statement = connection.prepareStatement(userIdSql)) {
+            statement.setString(1, username);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                int count = resultSet.getInt(1);
+                boolean doesUserExist = count > 0;
+                if (doesUserExist) {
+                    System.out.println("Пользователь с именем " + username + " уже существует.");
+                }
+                return false;
+            }
+        } catch (SQLException ex) {
+            System.out.println("Ошибка проверки существования игрока: " + ex.getMessage());
+        }
+
+        return false;
     }
 }

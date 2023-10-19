@@ -1,6 +1,6 @@
 package com.example.walletservice;
 
-import com.example.walletservice.database.ConnectionManager;
+import com.example.walletservice.config.ContainersEnvironment;
 import com.example.walletservice.model.User;
 import com.example.walletservice.repository.AuditRepositoryImpl;
 import com.example.walletservice.repository.PlayerRepository;
@@ -10,43 +10,37 @@ import com.example.walletservice.service.AuditServiceImpl;
 import com.example.walletservice.service.WalletService;
 import com.example.walletservice.service.WalletServiceImpl;
 import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
+import java.util.NoSuchElementException;
+
+import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@Testcontainers
-public class WalletServiceTest {
+public class WalletServiceTest extends ContainersEnvironment {
 
-    @Container
-    private static final PostgreSQLContainer<?> postgresContainer = new PostgreSQLContainer<>("postgres:13.3");
     private static WalletService walletService;
     private static PlayerRepository playerRepository;
     private static AuditService auditService;
 
-    @BeforeAll
-    static void setUp() {
-        postgresContainer.start();
-
-        ConnectionManager connection = new ConnectionManager(postgresContainer.getJdbcUrl(),
-        postgresContainer.getPassword(), postgresContainer.getPassword());
-
-        playerRepository = new PlayerRepositoryImpl(connection);
+    @BeforeEach
+    public void setUp() {
+        playerRepository = PlayerRepositoryImpl.getInstance();
         auditService = new AuditServiceImpl(new AuditRepositoryImpl());
         walletService = new WalletServiceImpl(playerRepository, auditService);
     }
 
     @AfterAll
     static void tearDown() {
-        postgresContainer.stop();
+        playerRepository = PlayerRepositoryImpl.getInstance();
+        playerRepository.deleteAll();
     }
 
+
     @Test
-    public void testRegisterPlayer() {
+    public void testRegisterPlayerPositive() {
         String username = "testUser";
         String password = "testPassword";
 
@@ -59,7 +53,19 @@ public class WalletServiceTest {
     }
 
     @Test
-    public void testAuthenticatePlayer() {
+    public void testRegisterPlayerNegative() {
+        String username = "testUser";
+        String password = "testPassword";
+
+        walletService.registerPlayer(username, password);
+
+        assertThrows(NoSuchElementException.class, () -> {
+            walletService.registerPlayer(username, "newPassword");
+        });
+    }
+
+    @Test
+    public void testAuthenticatePlayerPositive() {
         String username = "testUser";
         String password = "testPassword";
 
@@ -70,7 +76,19 @@ public class WalletServiceTest {
     }
 
     @Test
-    public void testGetPlayerBalance() {
+    public void testAuthenticatePlayerNegative() {
+        String username = "testUser";
+        String password = "testPassword";
+
+        walletService.registerPlayer(username, password);
+
+        boolean isAuthenticated = walletService.authenticatePlayer(username, "wrongPassword");
+
+        assertTrue(isAuthenticated);
+    }
+
+    @Test
+    public void testGetPlayerBalancePositive() {
         String username = "testUser";
         String password = "testPassword";
 
@@ -78,5 +96,16 @@ public class WalletServiceTest {
 
         double balance = walletService.getPlayerBalance(username);
         assertEquals(0.0, balance);
+    }
+
+    @Test
+    public void testGetPlayerBalanceNegative() {
+        String username = "testUser";
+        String password = "testPassword";
+
+        walletService.registerPlayer(username, password);
+
+        double balance = walletService.getPlayerBalance(username);
+        assertEquals(10.0, balance);
     }
 }

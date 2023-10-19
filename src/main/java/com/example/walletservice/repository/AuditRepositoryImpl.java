@@ -74,7 +74,7 @@ public class AuditRepositoryImpl implements AuditRepository {
     public List<String> getAuditLogs() {
         List<String> auditLogs = new ArrayList<>();
 
-        String sql = "SELECT * FROM audit_logs";
+        String sql = "SELECT * FROM wallet.audit_logs";
         try (Connection connection = ConnectionManager.getConnection();
         PreparedStatement statement = connection.prepareStatement(sql)){
 
