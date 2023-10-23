@@ -1,21 +1,25 @@
 package com.example.walletservice.In;
 
-import com.example.walletservice.model.Transaction;
+import com.example.walletservice.repository.AuditRepository;
+import com.example.walletservice.repository.AuditRepositoryImpl;
 import com.example.walletservice.repository.PlayerRepository;
 import com.example.walletservice.repository.PlayerRepositoryImpl;
-import com.example.walletservice.service.AuditService;
-import com.example.walletservice.service.WalletService;
-import com.example.walletservice.service.WalletServiceImpl;
+import com.example.walletservice.service.*;
 
 import java.util.Scanner;
 
+
 /**
- * Класс, представляющий консольное приложение для работы с кошельком.
+ * Класс WalletConsole представляет собой консольное приложение для работы с кошельком пользователей.
+ * Позволяет регистрировать и аутентифицировать пользователей, выполнять транзакции и просматривать аудитовые записи.
  */
 public class WalletConsole {
     PlayerRepository playerRepository = new PlayerRepositoryImpl();
-    AuditService auditService = new AuditService();
+    AuditRepository auditRepository = new AuditRepositoryImpl();
+    AuditService auditService = new AuditServiceImpl(auditRepository);
     WalletService walletService = new WalletServiceImpl(playerRepository, auditService);
+    TransactionService transactionService = new TransactionServiceImpl(playerRepository, auditService);
+
 
     /**
      * Запускает консольное приложение для работы с кошельком.
@@ -76,15 +80,13 @@ public class WalletConsole {
                                     System.out.println("Ваш баланс " + balance);
                                     break;
                                 case "2": {
-                                    System.out.print("Введите сумму для списания ");
+                                    System.out.print("Введите сумму для списания: ");
                                     double amount = scanner.nextDouble();
                                     scanner.nextLine();
                                     System.out.print("Введите идентификатор транзакции: ");
                                     String transactionId = scanner.nextLine();
 
-                                    WalletService debitTransaction = new WalletServiceImpl();
-                                    Transaction transaction = debitTransaction.debitTransaction(amount, transactionId);
-                                    walletService.executeTransaction(username, transaction);
+                                    transactionService.executeTransaction(username, amount, transactionId, "debit");
                                     break;
                                 }
                                 case "3": {
@@ -94,13 +96,11 @@ public class WalletConsole {
                                     System.out.print("Введите идентификатор транзакции: ");
                                     String transactionId = scanner.nextLine();
 
-                                    WalletService creditTransaction = new WalletServiceImpl();
-                                    Transaction transaction = creditTransaction.creditTransaction(amount, transactionId);
-                                    walletService.executeTransaction(username, transaction);
+                                    transactionService.executeTransaction(username, amount, transactionId, "credit");
                                     break;
                                 }
                                 case "4":
-                                    walletService.viewPlayerHistory(username);
+                                    transactionService.viewPlayerHistory(username);
                                     break;
                                 case "5":
                                     auditService.logLogout(username);

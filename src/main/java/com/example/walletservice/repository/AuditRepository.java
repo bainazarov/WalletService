@@ -1,10 +1,11 @@
-package com.example.walletservice.service;
+package com.example.walletservice.repository;
 
+import java.util.List;
 
 /**
- * Интерфейс AuditService отвечает за выполнение операций аудита системы кошелька.
+ * Интерфейс AuditRepository отвечает за журналирование аудита системы кошелька.
  */
-public interface AuditService {
+public interface AuditRepository {
 
     /**
      * Записывает информацию об аутентификации пользователя в журнал аудита.
@@ -12,14 +13,12 @@ public interface AuditService {
      */
     void logAuthentication(String username);
 
-
     /**
      * Записывает информацию о выходе пользователя из системы в журнал аудита.
      * @param username Имя пользователя
      */
     void logLogout(String username);
-
-
+    
     /**
      * Записывает информацию о транзакции пользователя в журнал аудита.
      * @param username Имя пользователя
@@ -29,7 +28,8 @@ public interface AuditService {
     void logTransaction(String username, String transactionType, double amount);
 
     /**
-     * Выводит на консоль аудитовые записи.
+     * Возвращает список журналов аудита.
+     * @return Список журналов аудита
      */
-    void printAuditLogs();
+    List<String> getAuditLogs();
 }
