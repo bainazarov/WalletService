@@ -4,6 +4,7 @@ import com.example.walletservice.config.ContainersEnvironment;
 import com.example.walletservice.model.User;
 import com.example.walletservice.repository.PlayerRepository;
 import com.example.walletservice.repository.PlayerRepositoryImpl;
+import com.example.walletservice.repository.TransactionRepository;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,6 +16,7 @@ import java.util.HashSet;
 
 public class PlayerRepositoryTest extends ContainersEnvironment {
     private static PlayerRepository playerRepository;
+    private static TransactionRepository transactionRepository;
 
     @BeforeEach
     public void setUp() {
@@ -34,7 +36,7 @@ public class PlayerRepositoryTest extends ContainersEnvironment {
 
         playerRepository.registerPlayer(username, password);
 
-        User user = playerRepository.getPlayer(username);
+        User user = playerRepository.get(username);
         Assertions.assertNotNull(user);
         Assertions.assertEquals(username, user.getUsername());
         Assertions.assertEquals(password, user.getPassword());
@@ -81,7 +83,7 @@ public class PlayerRepositoryTest extends ContainersEnvironment {
 
         playerRepository.registerPlayer(username, password);
 
-        User user = playerRepository.getPlayer(username);
+        User user = playerRepository.get(username);
         Assertions.assertNotNull(user);
         Assertions.assertEquals(username, user.getUsername());
     }
@@ -90,7 +92,7 @@ public class PlayerRepositoryTest extends ContainersEnvironment {
     public void getPlayerNegative() {
         String username = "nonExistingUser";
 
-        User user = playerRepository.getPlayer(username);
+        User user = playerRepository.get(username);
         Assertions.assertNotNull(user);
     }
 
@@ -102,10 +104,10 @@ public class PlayerRepositoryTest extends ContainersEnvironment {
         double transactionAmount = 50.0;
 
         playerRepository.registerPlayer(username, "testPassword");
-        int playerId = playerRepository.getPlayer(username).getPlayerId();
-        playerRepository.saveTransactionId(playerId, transactionId, transactionType, transactionAmount);
+        int playerId = playerRepository.get(username).getPlayerId();
+        transactionRepository.saveTransactionId(playerId, transactionId, transactionType, transactionAmount);
 
-        User user = playerRepository.getPlayer(username);
+        User user = playerRepository.get(username);
         Assertions.assertNotNull(user);
         Assertions.assertTrue(user.getTransactionIds().contains(transactionId));
         Assertions.assertEquals(transactionType, user.getTransactionTypes().get(transactionId));
@@ -118,10 +120,10 @@ public class PlayerRepositoryTest extends ContainersEnvironment {
         String transactionType = "debit";
         double transactionAmount = 50.0;
 
-        playerRepository.saveTransactionId(playerId, transactionId, transactionType, transactionAmount);
+        transactionRepository.saveTransactionId(playerId, transactionId, transactionType, transactionAmount);
 
         Assertions.assertThrows(RuntimeException.class, () -> {
-            playerRepository.saveTransactionId(playerId, transactionId, transactionType, transactionAmount);
+            transactionRepository.saveTransactionId(playerId, transactionId, transactionType, transactionAmount);
         });
     }
 
@@ -134,14 +136,14 @@ public class PlayerRepositoryTest extends ContainersEnvironment {
         double newBalance = 150.0;
 
         playerRepository.registerPlayer(username, password);
-        User user = playerRepository.getPlayer(username);
+        User user = playerRepository.get(username);
         user.setBalance(initialBalance);
         playerRepository.updatePlayer(user);
 
         user.setBalance(newBalance);
         playerRepository.updatePlayer(user);
 
-        User updatedUser = playerRepository.getPlayer(username);
+        User updatedUser = playerRepository.get(username);
         Assertions.assertEquals(newBalance, updatedUser.getBalance());
     }
     @Test
@@ -184,7 +186,7 @@ public class PlayerRepositoryTest extends ContainersEnvironment {
 
         playerRepository.deleteAll();
 
-        User deletedUser = playerRepository.getPlayer(username);
+        User deletedUser = playerRepository.get(username);
         Assertions.assertNull(deletedUser);
     }
 
@@ -194,12 +196,12 @@ public class PlayerRepositoryTest extends ContainersEnvironment {
         String password = "testPassword";
 
         playerRepository.registerPlayer(username, password);
-        User user = playerRepository.getPlayer(username);
+        User user = playerRepository.get(username);
         Assertions.assertNotNull(user);
 
         playerRepository.deleteAll();
 
-        user = playerRepository.getPlayer(username);
+        user = playerRepository.get(username);
         Assertions.assertNotNull(user);
     }
 

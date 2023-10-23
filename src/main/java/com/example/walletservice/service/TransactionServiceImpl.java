@@ -4,6 +4,8 @@ import com.example.walletservice.model.CreditTransaction;
 import com.example.walletservice.model.DebitTransaction;
 import com.example.walletservice.model.User;
 import com.example.walletservice.repository.PlayerRepository;
+import com.example.walletservice.repository.TransactionRepository;
+import lombok.AllArgsConstructor;
 
 import java.util.Map;
 import java.util.Set;
@@ -12,6 +14,7 @@ public class TransactionServiceImpl implements TransactionService{
 
     private PlayerRepository playerRepository;
     private AuditService auditService;
+    private TransactionRepository transactionRepository;
 
     public TransactionServiceImpl(PlayerRepository playerRepository, AuditService auditService) {
         this.playerRepository = playerRepository;
@@ -20,7 +23,7 @@ public class TransactionServiceImpl implements TransactionService{
 
     @Override
     public void executeTransaction(String username, double amount, String transactionId, String transactionType) {
-        User user = playerRepository.getPlayer(username);
+        User user = playerRepository.get(username);
         if (user != null) {
             if (user.getTransactionIds().contains(transactionId)) {
                 System.out.println("Ошибка: Транзакция с таким идентификатором уже существует");
@@ -36,7 +39,7 @@ public class TransactionServiceImpl implements TransactionService{
             }
 
             playerRepository.updatePlayer(user);
-            playerRepository.saveTransactionId(user.getPlayerId(), transactionId, transactionType, amount);
+            transactionRepository.saveTransactionId(user.getPlayerId(), transactionId, transactionType, amount);
             auditService.logTransaction(username, transactionType, amount);
         }
     }
@@ -107,7 +110,7 @@ public class TransactionServiceImpl implements TransactionService{
 
     @Override
     public void viewPlayerHistory(String username) {
-        User user = playerRepository.getPlayer(username);
+        User user = playerRepository.get(username);
         if (user != null) {
             System.out.println("История транзакций для " + username + ":");
 

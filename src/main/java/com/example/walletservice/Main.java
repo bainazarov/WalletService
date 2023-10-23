@@ -1,7 +1,7 @@
 package com.example.walletservice;
 
 import com.example.walletservice.In.WalletConsole;
-import com.example.walletservice.liquibase.MyLiquibase;
+import com.example.walletservice.liquibase.Liquibase;
 
 /**
  * Главный класс приложения.
@@ -13,8 +13,8 @@ public class Main {
      * @param args аргументы командной строки
      */
     public static void main(String[] args) {
-        MyLiquibase liquibase = new MyLiquibase();
-        liquibase.startLiquibase();
+        Liquibase liquibase = new Liquibase();
+        liquibase.start();
         WalletConsole walletConsole = new WalletConsole();
         walletConsole.start();
     }

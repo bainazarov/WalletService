@@ -10,9 +10,9 @@ import java.sql.SQLException;
  */
 public class ConnectionManager {
 
-    private static String URL = DbConfig.getDbUrl();
-    private static String USERNAME = DbConfig.getDbUsername();
-    private static String PASSWORD = DbConfig.getDbPassword();
+    private static String URL = DatabaseConfig.getUrl();
+    private static String USERNAME = DatabaseConfig.getUsername();
+    private static String PASSWORD = DatabaseConfig.getPassword();
 
     public ConnectionManager(String url, String username, String password) {
         this.URL = url;

@@ -2,6 +2,7 @@ package com.example.walletservice.repository;
 
 import com.example.walletservice.database.ConnectionManager;
 import com.example.walletservice.model.User;
+import lombok.AllArgsConstructor;
 
 import java.sql.*;
 import java.util.HashMap;
@@ -9,14 +10,12 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+@AllArgsConstructor
 public class PlayerRepositoryImpl implements PlayerRepository {
     private static final PlayerRepositoryImpl playerRepository = new PlayerRepositoryImpl();
 
     public static PlayerRepositoryImpl getInstance()  {
         return playerRepository;
-    }
-
-    public PlayerRepositoryImpl() {
     }
 
 
@@ -58,7 +57,7 @@ public class PlayerRepositoryImpl implements PlayerRepository {
     }
 
     @Override
-    public User getPlayer(String username) {
+    public User get(String username) {
         String sql = "SELECT * FROM wallet.players WHERE username = ?";
 
         try (Connection connection = ConnectionManager.getConnection();
@@ -96,23 +95,6 @@ public class PlayerRepositoryImpl implements PlayerRepository {
         }
 
         return null;
-    }
-
-    @Override
-    public void saveTransactionId(int playerId, String transactionId, String transactionType, double transactionAmount) {
-        String sql = "INSERT INTO wallet.transaction_ids (transaction_id, transaction_type, player_id, amount) VALUES (?, ?, ?, ?)";
-
-        try (Connection connection = ConnectionManager.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setString(1, transactionId);
-            statement.setString(2, transactionType);
-            statement.setInt(3, playerId);
-            statement.setDouble(4, transactionAmount);
-
-            statement.executeUpdate();
-        } catch (SQLException e) {
-            throw new RuntimeException("Ошибка при сохранении идентификатора транзакции: " + e.getMessage());
-        }
     }
 
     @Override

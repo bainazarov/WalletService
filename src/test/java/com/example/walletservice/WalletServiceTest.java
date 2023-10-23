@@ -46,7 +46,7 @@ public class WalletServiceTest extends ContainersEnvironment {
 
         walletService.registerPlayer(username, password);
 
-        User user = playerRepository.getPlayer(username);
+        User user = playerRepository.get(username);
         assertEquals(username, user.getUsername());
         assertEquals(password, user.getPassword());
         assertEquals(0.0, user.getBalance());

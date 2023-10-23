@@ -44,7 +44,7 @@ public class TransactionTest extends ContainersEnvironment {
         String transactionType = "debit";
 
         playerRepository.registerPlayer(username, password);
-        User user = playerRepository.getPlayer(username);
+        User user = playerRepository.get(username);
         user.setBalance(initialBalance);
         playerRepository.updatePlayer(user);
 
@@ -66,7 +66,7 @@ public class TransactionTest extends ContainersEnvironment {
         String transactionType = "debit";
 
         playerRepository.registerPlayer(username, password);
-        User user = playerRepository.getPlayer(username);
+        User user = playerRepository.get(username);
         user.setBalance(initialBalance);
         playerRepository.updatePlayer(user);
 

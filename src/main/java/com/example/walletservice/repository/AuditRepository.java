@@ -3,7 +3,7 @@ package com.example.walletservice.repository;
 import java.util.List;
 
 /**
- * Интерфейс AuditRepositoryImpl отвечает за журналирование аудита системы кошелька.
+ * Интерфейс AuditRepository отвечает за журналирование аудита системы кошелька.
  */
 public interface AuditRepository {
 
@@ -12,11 +12,13 @@ public interface AuditRepository {
      * @param username Имя пользователя
      */
     void logAuthentication(String username);
+
     /**
      * Записывает информацию о выходе пользователя из системы в журнал аудита.
      * @param username Имя пользователя
      */
     void logLogout(String username);
+    
     /**
      * Записывает информацию о транзакции пользователя в журнал аудита.
      * @param username Имя пользователя
@@ -24,6 +26,7 @@ public interface AuditRepository {
      * @param amount Сумма транзакции
      */
     void logTransaction(String username, String transactionType, double amount);
+
     /**
      * Возвращает список журналов аудита.
      * @return Список журналов аудита

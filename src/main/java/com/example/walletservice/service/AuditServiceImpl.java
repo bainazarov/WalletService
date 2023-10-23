@@ -1,17 +1,15 @@
 package com.example.walletservice.service;
 
 import com.example.walletservice.repository.AuditRepository;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import java.util.List;
 
 @Data
+@AllArgsConstructor
 public class AuditServiceImpl implements AuditService {
 
     private AuditRepository auditRepository;
-
-    public AuditServiceImpl(AuditRepository auditRepository) {
-        this.auditRepository = auditRepository;
-    }
 
     @Override
     public void logAuthentication(String username) {

@@ -28,16 +28,7 @@ public interface PlayerRepository {
      * @param username Имя пользователя
      * @return Объект User, представляющий информацию об игроке
      */
-    User getPlayer(String username);
-
-    /**
-     * Сохраняет идентификатор транзакции игрока.
-     * @param playerId Идентификатор игрока
-     * @param transactionId Идентификатор транзакции
-     * @param transactionType Тип транзакции
-     * @param transactionAmount Сумма транзакции
-     */
-    void saveTransactionId(int playerId, String transactionId, String transactionType, double transactionAmount);
+    User get(String username);
 
     /**
      * Обновляет информацию об игроке.
@@ -45,14 +36,12 @@ public interface PlayerRepository {
      */
     void updatePlayer(User user);
 
-
     /**
      * Удаляет все записи из таблицы wallet.players, wallet.audit_logs и wallet.transaction_ids.
      *
      * @throws RuntimeException если произошла ошибка при выполнении SQL-запроса DELETE.
      */
     void deleteAll();
-
 
     /**
      * Проверяет существование игрока с указанным именем и паролем в таблице wallet.players.

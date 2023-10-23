@@ -37,7 +37,7 @@ public class WalletServiceImpl implements WalletService {
 
     @Override
     public double getPlayerBalance(String username) {
-        User user = playerRepository.getPlayer(username);
+        User user = playerRepository.get(username);
         if (user != null) {
             return user.getBalance();
         }
